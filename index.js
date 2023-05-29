@@ -64,11 +64,11 @@ Aşağıdaki takimSkoru() fonksiyonununda aşağıdakileri yapınız:
 Not: Bu fonskiyon, aşağıdaki diğer görevler için de bir callback fonksiyonu olarak da kullanılacak
 */
 
-function takimSkoru(/*Kodunuzu buraya yazınız*/){
-    /*Kodunuzu buraya yazınız*/
+function takimSkoru() {
+  return Math.floor(Math.random() * 16) + 10; 
 }
 
-
+console.log("takimSkoru",takimSkoru());
 
 
 /* Görev 3: macSonucu() 
@@ -86,11 +86,17 @@ Aşağıdaki macSonucu() fonksiyonununda aşağıdakileri yapınız:
 }
 */ 
 
-function macSonucu(/*Kodunuzu buraya yazınız*/){
-  /*Kodunuzu buraya yazınız*/
+function macSonucu(callFn,çeyrekSayisi){
+ let evSahibiSkor = callFn();
+ let KonukTakımSkor = callFn();
+
+ return {
+  EvSahibi:evSahibiSkor,
+  KonukTakim:KonukTakımSkor,
+ }
 }
 
-
+console.log("macSonucu",macSonucu(takimSkoru,4));
 
 
 
@@ -109,10 +115,15 @@ Aşağıdaki periyotSkoru() fonksiyonununda aşağıdakileri yapınız:
   */
 
 
-function periyotSkoru(/*Kodunuzu buraya yazınız*/) {
-  /*Kodunuzu buraya yazınız*/
-
+function periyotSkoru(sonucUretenFn) {
+ 
+  return {
+      EvSahibi: sonucUretenFn(),
+      KonukTakim: sonucUretenFn(),
+  };
 }
+console.log( "periyotSkoru",periyotSkoru(takimSkoru));
+
 
 
 /* Zorlayıcı Görev 5: skorTabelasi() 
@@ -146,9 +157,55 @@ MAÇ UZAR ise skorTabelasi(periyotSkoru,takimSkoru,4)
 ] */
 // NOTE: Bununla ilgili bir test yoktur. Eğer logladığınız sonuçlar yukarıdakine benziyor ise tmamlandı sayabilirsiniz.
 
-function skorTabelasi(/*Kodunuzu buraya yazınız*/) {
-  /*Kodunuzu buraya yazınız*/
+function skorTabelasi(periyotSkoruFn, takimSkoruFn, ceyrekSayisi) {
+  let tabelaPeriyot = {};
+  const skorTabelasi = [];
+
+  let evSahibiSkor = 0;
+  let KonukTakimSkor = 0;
+
+  for (let i = 0; i < ceyrekSayisi; i++) {
+    tabelaPeriyot = periyotSkoruFn(takimSkoruFn);
+    evSahibiSkor = evSahibiSkor + tabelaPeriyot.EvSahibi;
+    KonukTakimSkor = KonukTakimSkor + tabelaPeriyot.KonukTakim;
+    skorTabelasi.push(tabelaPeriyot);
+
+    console.log(
+      `${i + 1}. Periyot: Ev Sahibi ${tabelaPeriyot.EvSahibi} - Konuk Takım ${
+        tabelaPeriyot.KonukTakim
+      }`
+    );
+  }
+  let uzatmaSayisi = 0;
+  function uzatmaKontrol() {
+    if (evSahibiSkor === KonukTakimSkor) {
+      uzatmaSayisi++; // uzatmaSayisi = uzatmaSayisi + 1;
+      tabelaPeriyot = periyotSkoruFn(takimSkoruFn);
+      evSahibiSkor = evSahibiSkor + tabelaPeriyot.EvSahibi;
+      KonukTakimSkor = KonukTakimSkor + tabelaPeriyot.KonukTakim;
+      skorTabelasi.push(tabelaPeriyot);
+      console.log(
+        `${uzatmaSayisi}. Uzatma: Ev Sahibi ${tabelaPeriyot.EvSahibi} - Konuk Takım ${tabelaPeriyot.KonukTakim}`
+      );
+    }
+    // ilk kontrol sonrası tekrar kontrol etmek için
+    if (evSahibiSkor === KonukTakimSkor) {
+      // reqursive function
+      uzatmaKontrol();
+    }
+  }
+
+  uzatmaKontrol();
+
+  // console.log("skorTabelasi", skorTabelasi);
+  console.log(
+    `Maç Sonucu: Ev Sahibi ${evSahibiSkor} - Konuk Takım ${KonukTakimSkor}`
+  );
+
+  // console.log("toplamlar", evSahibiSkor, KonukTakimSkor);
 }
+
+console.log("skorTabelasi", skorTabelasi(periyotSkoru, takimSkoru, 4));
 
 
 
